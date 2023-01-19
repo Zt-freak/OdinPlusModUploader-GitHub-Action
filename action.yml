@@ -1,0 +1,27 @@
+name: "OdinPlusModUploader GitHub Action"
+description: "Automate deploying mods with OdinPlusModUploader"
+branding:
+  icon: archive
+  color: red
+author: "Zt-freak"
+inputs:
+  nexusmod_api_key:
+    description: 'Nexusmods API key.'
+    required: true
+    default: ${{ secrets.NEXUSMOD_API_KEY }}
+  nexusmod_cookie_nexusid:
+    description: 'Nexusmods Cookie NexusId.'
+    required: true
+    default: ${{ secrets.NEXUSMOD_COOKIE_NEXUSID }}
+  nexusmod_cookie_sid_develop:
+    description: 'Nexusmods SID Develop.'
+    required: true
+    default: ${{ secrets.NEXUSMOD_COOKIE_SID_DEVELOP }}
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-dotnet@v1
+    - run: dotnet tool install --global OdinPlusModUploader
+      shell: bash
+    - run: OdinPlusModUploader nx check -k "${{inputs.nexusmod_api_key}}" -cnxid "${{inputs.nexusmod_cookie_nexusid}}" -csid "${{inputs.nexusmod_cookie_sid_develop}}"
+      shell: bash
