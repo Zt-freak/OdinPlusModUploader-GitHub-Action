@@ -5,6 +5,12 @@ branding:
   color: red
 author: "Zt-freak"
 inputs:
+  nexusmod_mod_id:
+    description: 'Nexusmods Mod id'
+    required: true
+  file:
+    description: 'File to upload'
+    required: true
   nexusmod_api_key:
     description: 'Nexusmods API key.'
     required: true
@@ -24,4 +30,6 @@ runs:
     - run: dotnet tool install --global OdinPlusModUploader
       shell: bash
     - run: OdinPlusModUploader nx check -k "${{inputs.nexusmod_api_key}}" -cnxid "${{inputs.nexusmod_cookie_nexusid}}" -csid "${{inputs.nexusmod_cookie_sid_develop}}"
+      shell: bash
+    - run: OdinPlusModUploader nx upload "${{inputs.nexusmod_mod_id}}" "${{inputs.file}}" -v "1.0.6" -f "TestFile" -t Main -ddwm -dmv -d "My Test File"
       shell: bash
