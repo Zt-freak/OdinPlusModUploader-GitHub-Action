@@ -26,10 +26,20 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - uses: actions/setup-dotnet@v1
-    - run: dotnet tool install --global OdinPlusModUploader
+    - name: Setup .NET 6 SDK
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '6.0.x'
+
+    - name: Restore tools
+      run: dotnet tool install -g Digitalroot.OdinPlusModUploader
       shell: bash
-    - run: OdinPlusModUploader nx check -k "${{inputs.nexusmod_api_key}}" -cnxid "${{inputs.nexusmod_cookie_nexusid}}" -csid "${{inputs.nexusmod_cookie_sid_develop}}"
-      shell: bash
-    - run: OdinPlusModUploader nx upload "${{inputs.nexusmod_mod_id}}" "${{inputs.file}}" -v "1.0.6" -f "TestFile" -t Main -ddwm -dmv -d "My Test File"
-      shell: bash
+
+    - name: Upload
+      env:
+        NEXUSMOD_API_KEY: ${{ secrets.nexus-api-key }}
+        NEXUSMOD_COOKIE_NEXUSID: ${{ secrets.nexus-cookie-nxid-header }}
+        NEXUSMOD_COOKIE_SID_DEVELOP: ${{ secrets.nexus-cookie-sid-header }}
+      run: |
+        opmu nx check
+        opmu nx upload ${{ inputs.nexus-mod-id }} ${{ steps.download.outputs.download-path }}/${{ needs.prebuild.outputs.proj-file-name }}.v${{ needs.prebuild.outputs.next-tag }}.zip -v ${{ needs.prebuild.outputs.next-tag }} -d "OdinPlusModUploader (CI/CD)" -f ${{ needs.prebuild.outputs.proj-file-name }} -dmv
