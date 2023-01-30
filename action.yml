@@ -11,6 +11,9 @@ inputs:
   file:
     description: 'File to upload'
     required: true
+  version:
+    description: 'Mod version'
+    required: true
   nexusmod_api_key:
     description: 'Nexusmods API key.'
     required: true
@@ -37,9 +40,9 @@ runs:
 
     - name: Upload
       env:
-        NEXUSMOD_API_KEY: ${{ secrets.nexus-api-key }}
-        NEXUSMOD_COOKIE_NEXUSID: ${{ secrets.nexus-cookie-nxid-header }}
-        NEXUSMOD_COOKIE_SID_DEVELOP: ${{ secrets.nexus-cookie-sid-header }}
+        NEXUSMOD_API_KEY: ${{ inputs.nexus-api-key }}
+        NEXUSMOD_COOKIE_NEXUSID: ${{ inputs.nexusmod_cookie_nexusid }}
+        NEXUSMOD_COOKIE_SID_DEVELOP: ${{ inputs.nexusmod_cookie_sid_develop }}
       run: |
         opmu nx check
-        opmu nx upload ${{ inputs.nexus-mod-id }} ${{ steps.download.outputs.download-path }}/${{ needs.prebuild.outputs.proj-file-name }}.v${{ needs.prebuild.outputs.next-tag }}.zip -v ${{ needs.prebuild.outputs.next-tag }} -d "OdinPlusModUploader (CI/CD)" -f ${{ needs.prebuild.outputs.proj-file-name }} -dmv
+        opmu nx upload ${{ inputs.nexus-mod-id }} ${{ inputs.file }}.zip -v ${{ inputs.version }} -d "OdinPlusModUploader (CI/CD)" -f ${{ inputs.file }} -dmv
